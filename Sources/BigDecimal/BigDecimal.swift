@@ -1,4 +1,8 @@
+#if swift(>=5.6)
 @preconcurrency import BigInt
+#else
+import BigInt
+#endif
 
 /// A big decimal type.
 public struct BigDecimal {
@@ -160,7 +164,7 @@ extension BigDecimal {
 
         let exponentSeparator: [Character] = ["e", "E"]
 
-        let (basePart, exponentValue) = try {
+        let (basePart, exponentValue): (S.SubSequence, Int) = try {
             if let location = string.firstIndex(where: exponentSeparator.contains(_:)) {
                 let exponent = string[string.index(after: location)...]
 
@@ -178,7 +182,7 @@ extension BigDecimal {
             throw ParsingError.empty
         }
 
-        let (digits, decimalOffset) = {
+        let (digits, decimalOffset): (String, Int) = {
             if let location = basePart.firstIndex(of: ".") {
                 let trail = basePart[basePart.index(after: location)...]
 
@@ -438,7 +442,7 @@ extension BigDecimal: LosslessStringConvertible {
     public var description: String {
         var absoluteIntegerValue = self.integerValue.magnitude.description
 
-        let (before, after) = {
+        let (before, after): (String, String) = {
             if self.scale >= absoluteIntegerValue.count {
                 let after = String(repeating: "0", count: self.scale - absoluteIntegerValue.count) + absoluteIntegerValue
                 return ("0", after)
@@ -510,4 +514,6 @@ extension BigDecimal: Codable {
 }
 
 
+#if swift(>=5.5)
 extension BigDecimal: Sendable {}
+#endif
