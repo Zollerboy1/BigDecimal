@@ -1,5 +1,9 @@
 #if swift(>=5.6)
 @preconcurrency import BigInt
+#elseif swift(>=5.5)
+import BigInt
+
+extension BigInt: @unchecked Sendable {}
 #else
 import BigInt
 #endif
